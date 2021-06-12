@@ -1,15 +1,25 @@
 package com.udacity.vehicles;
 
+import com.netflix.discovery.EurekaClient;
+import com.netflix.discovery.shared.Application;
 import com.udacity.vehicles.domain.manufacturer.Manufacturer;
 import com.udacity.vehicles.domain.manufacturer.ManufacturerRepository;
+import com.udacity.vehicles.exception.ServiceNotFoundException;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import java.util.List;
 
 /**
  * Launches a Spring Boot application for the Vehicles API,
@@ -18,7 +28,15 @@ import org.springframework.web.reactive.function.client.WebClient;
  */
 @SpringBootApplication
 @EnableJpaAuditing
+@EnableEurekaClient
+@EnableDiscoveryClient
 public class VehiclesApiApplication {
+
+    private DiscoveryClient discoveryClient;
+
+    public VehiclesApiApplication(DiscoveryClient discoveryClient) {
+        this.discoveryClient = discoveryClient;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(VehiclesApiApplication.class, args);
@@ -62,7 +80,13 @@ public class VehiclesApiApplication {
      */
     @Bean(name="pricing")
     public WebClient webClientPricing(@Value("${pricing.endpoint}") String endpoint) {
-        return WebClient.create(endpoint);
-    }
+        List<ServiceInstance> serviceInstanceList = discoveryClient.getInstances(endpoint);
 
+        if(serviceInstanceList == null || serviceInstanceList.isEmpty())
+            throw new ServiceNotFoundException("Error in connecting to - "+ endpoint);
+
+        ServiceInstance instance = serviceInstanceList.get(0);
+        return WebClient.create(instance.getUri().toString());
+
+    }
 }
