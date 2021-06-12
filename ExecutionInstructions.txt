@@ -1,0 +1,36 @@
+Public Github Repo for submission
+----------------------------------
+https://github.com/eswaran-a/CarBackendService.git
+
+Discovery Eureka Server
+-----------------------
+http://localhost:8761/
+
+Pricing Service Endpoints
+-------------------------
+http://localhost:8082/services/price/
+http://localhost:8082/services/price/1
+
+H2 Database - http://localhost:8082/h2/login.do
+jdbc:h2:mem:vehicledata (default username / password)
+
+Boogle Maps Endpoint
+--------------------
+http://localhost:9191/maps?lat=10&lon=10
+
+Vehicle Service
+---------------
+Vehicle Service Swagger to Post (Create) data, before invoking cars endpoint
+
+http://localhost:8080/swagger-ui.html
+
+For /cars Post to add data, remove id:0 and update manufacturer.code to any value between 101 and 105
+
+Vehicle Service Endpoints
+
+http://localhost:8080/cars
+http://localhost:8080/cars/1
+
+
+http://localhost:8080/h2/login.do
+jdbc:h2:mem:vehicledata (default username / password)
