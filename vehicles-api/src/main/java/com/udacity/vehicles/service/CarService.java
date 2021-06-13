@@ -64,6 +64,7 @@ public class CarService {
             return repository.findById(car.getId())
                     .map(carToBeUpdated -> {
                         carToBeUpdated.setDetails(car.getDetails());
+                        carToBeUpdated.setCondition(car.getCondition());
                         if(!car.getLocation().equals(carToBeUpdated.getLocation())){
                             Location location = mapsClient.getAddress(car.getLocation());
                             carToBeUpdated.setLocation(car.getLocation());

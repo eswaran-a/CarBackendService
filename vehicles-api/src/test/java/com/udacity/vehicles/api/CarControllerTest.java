@@ -81,6 +81,7 @@ public class CarControllerTest {
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isCreated());
+        verify(carService, times(1)).save(any());
     }
 
     /**
@@ -105,6 +106,25 @@ public class CarControllerTest {
                 get(new URI("/cars/1")))
                 .andExpect(status().isOk());
         verify(carService, times(1)).findById(1l);
+    }
+
+    /**
+     * Tests the updation of a single car by ID.
+     * @throws Exception if the delete operation of a vehicle fails
+     */
+    @Test
+    public void updateCar() throws Exception {
+        Car car = getCar();
+        car.setId(1L);
+
+        mvc.perform(
+                put(new URI("/cars/1"))
+                        .content(json.write(car).getJson())
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .accept(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk());
+
+        verify(carService, times(1)).save(any());
     }
 
     /**
